@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alex Morgan — Designer & Developer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000;
+      --surface: #111;
+      --surface2: #1a1a1a;
+      --border: rgba(255,255,255,0.08);
+      --text: #f5f5f7;
+      --muted: #86868b;
+      --accent: #2997ff;
+      --accent-hover: #0071e3;
+      --radius: 18px;
+      --nav-h: 60px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 36px;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background .3s;
+    }
+    .nav-logo {
+      font-size: 1.05rem; font-weight: 600; letter-spacing: -.3px;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: .875rem; color: var(--muted); text-decoration: none;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      font-size: .875rem; font-weight: 500;
+      background: var(--accent); color: #fff;
+      padding: 7px 18px; border-radius: 980px;
+      text-decoration: none; transition: background .2s, transform .15s;
+    }
+    .nav-cta:hover { background: var(--accent-hover); transform: scale(1.03); }
+
+    /* ─── HERO ────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: calc(var(--nav-h) + 60px) 24px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; width: 720px; height: 720px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(41,151,255,.18) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none; animation: pulse 6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: translate(-50%,-50%) scale(1); opacity: .7; }
+      50%      { transform: translate(-50%,-50%) scale(1.12); opacity: 1; }
+    }
+    .avatar {
+      width: 112px; height: 112px; border-radius: 50%;
+      background: linear-gradient(135deg, #2997ff 0%, #5e5ce6 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.6rem; font-weight: 700; color: #fff;
+      margin-bottom: 28px; position: relative;
+      box-shadow: 0 0 0 4px rgba(41,151,255,.3);
+      animation: fadeUp .8s ease both;
+    }
+    .hero-tag {
+      font-size: .8rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+      animation: fadeUp .8s .1s ease both;
+    }
+    h1 {
+      font-size: clamp(2.8rem, 8vw, 5.5rem);
+      font-weight: 700; letter-spacing: -.04em; line-height: 1.05;
+      background: linear-gradient(180deg, #f5f5f7 40%, #86868b 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeUp .8s .2s ease both;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.35rem);
+      color: var(--muted); margin-top: 18px; max-width: 520px; line-height: 1.6;
+      animation: fadeUp .8s .35s ease both;
+    }
+    .hero-actions {
+      display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp .8s .5s ease both;
+    }
+    .btn-primary {
+      padding: 14px 32px; border-radius: 980px; font-size: 1rem; font-weight: 500;
+      background: var(--accent); color: #fff; text-decoration: none;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 0 0 0 rgba(41,151,255,.5);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover); transform: scale(1.04);
+      box-shadow: 0 8px 32px rgba(41,151,255,.35);
+    }
+    .btn-secondary {
+      padding: 14px 32px; border-radius: 980px; font-size: 1rem; font-weight: 500;
+      border: 1.5px solid rgba(255,255,255,.2); color: var(--text); text-decoration: none;
+      background: rgba(255,255,255,.04); backdrop-filter: blur(8px);
+      transition: border-color .2s, background .2s, transform .15s;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(255,255,255,.45); background: rgba(255,255,255,.08);
+      transform: scale(1.04);
+    }
+    .scroll-indicator {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      color: var(--muted); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+      animation: fadeUp .8s .8s ease both;
+    }
+    .scroll-line {
+      width: 1.5px; height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
+      animation: scrollPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { opacity: .4; transform: scaleY(1); }
+      50%      { opacity: 1; transform: scaleY(1.15); }
+    }
+
+    /* ─── SECTIONS ────────────────────────────────── */
+    section { padding: 100px 24px; }
+    .section-inner { max-width: 960px; margin: 0 auto; }
+    .section-label {
+      font-size: .78rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; letter-spacing: -.03em;
+      line-height: 1.1; margin-bottom: 24px;
+    }
+    .divider {
+      border: none; border-top: 1px solid var(--border); margin: 0;
+    }
+
+    /* ─── ABOUT ───────────────────────────────────── */
+    #about { background: var(--bg); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    }
+    .about-text p {
+      color: var(--muted); font-size: 1.05rem; line-height: 1.75; margin-bottom: 18px;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { color: var(--text); font-weight: 500; }
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px 24px;
+      transition: transform .25s, border-color .25s, background .25s;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(41,151,255,.35);
+      background: var(--surface2);
+    }
+    .stat-number {
+      font-size: 2.4rem; font-weight: 700; letter-spacing: -.04em;
+      background: linear-gradient(135deg, var(--accent), #5e5ce6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: .85rem; color: var(--muted); margin-top: 6px; }
+
+    /* ─── RESUME ──────────────────────────────────── */
+    #resume { background: var(--surface); }
+    .resume-cards {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+      margin-top: 40px;
+    }
+    .resume-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      transition: transform .25s, border-color .25s;
+      position: relative; overflow: hidden;
+    }
+    .resume-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), #5e5ce6);
+      opacity: 0; transition: opacity .25s;
+    }
+    .resume-card:hover { transform: translateY(-4px); border-color: rgba(41,151,255,.3); }
+    .resume-card:hover::before { opacity: 1; }
+    .resume-card-icon { font-size: 1.6rem; margin-bottom: 14px; }
+    .resume-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+    .resume-card .years { font-size: .8rem; color: var(--accent); font-weight: 500; margin-bottom: 10px; }
+    .resume-card p { font-size: .875rem; color: var(--muted); line-height: 1.6; }
+    .resume-download {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-top: 40px; padding: 15px 30px; border-radius: 980px;
+      background: var(--accent); color: #fff; text-decoration: none;
+      font-size: .95rem; font-weight: 500;
+      transition: background .2s, transform .15s, box-shadow .2s;
+    }
+    .resume-download:hover {
+      background: var(--accent-hover); transform: scale(1.04);
+      box-shadow: 0 8px 28px rgba(41,151,255,.35);
+    }
+
+    /* ─── PASSIONS ────────────────────────────────── */
+    #passions { background: var(--bg); }
+    .passions-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;
+      margin-top: 40px;
+    }
+    .passion-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px 24px; text-align: center;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1), border-color .25s, background .25s;
+      cursor: default;
+    }
+    .passion-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: rgba(41,151,255,.35);
+      background: var(--surface2);
+    }
+    .passion-icon {
+      font-size: 2.4rem; margin-bottom: 16px; display: block;
+      transition: transform .3s;
+    }
+    .passion-card:hover .passion-icon { transform: scale(1.2) rotate(-5deg); }
+    .passion-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+    .passion-card p { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+
+    /* ─── CONTACT ─────────────────────────────────── */
+    #contact { background: var(--surface); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 60px; margin-top: 48px; }
+    .contact-info h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 14px; }
+    .contact-info p { color: var(--muted); font-size: .95rem; line-height: 1.7; margin-bottom: 32px; }
+    .contact-links { display: flex; flex-direction: column; gap: 14px; }
+    .contact-link {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--muted); text-decoration: none; font-size: .9rem;
+      transition: color .2s, transform .2s;
+    }
+    .contact-link:hover { color: var(--accent); transform: translateX(4px); }
+    .contact-link-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--bg); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+      transition: border-color .2s;
+    }
+    .contact-link:hover .contact-link-icon { border-color: rgba(41,151,255,.5); }
+
+    form { display: flex; flex-direction: column; gap: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: .8rem; font-weight: 500; color: var(--muted); letter-spacing: .04em; }
+    .field input, .field textarea, .field select {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 13px 16px;
+      color: var(--text); font-family: inherit; font-size: .9rem;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+      resize: vertical;
+    }
+    .field input:focus, .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(41,151,255,.15);
+    }
+    .field textarea { min-height: 130px; }
+    .field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: .6; }
+    .submit-btn {
+      padding: 15px 32px; border-radius: 980px;
+      background: var(--accent); color: #fff; border: none;
+      font-family: inherit; font-size: .95rem; font-weight: 500;
+      cursor: pointer; transition: background .2s, transform .15s, box-shadow .2s;
+      align-self: flex-start;
+    }
+    .submit-btn:hover {
+      background: var(--accent-hover); transform: scale(1.04);
+      box-shadow: 0 8px 28px rgba(41,151,255,.35);
+    }
+    .submit-btn:active { transform: scale(.98); }
+    .form-success {
+      display: none; background: rgba(52,199,89,.12); border: 1px solid rgba(52,199,89,.3);
+      border-radius: 12px; padding: 16px 20px; color: #34c759; font-size: .9rem;
+    }
+    .form-success.show { display: block; animation: fadeUp .4s ease; }
+
+    /* ─── FOOTER ──────────────────────────────────── */
+    footer {
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center; color: var(--muted); font-size: .82rem;
+    }
+    footer a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    footer a:hover { color: var(--text); }
+
+    /* ─── ANIMATIONS ──────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+      .form-row { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">Alex Morgan</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#resume">Experience</a></li>
+    <li><a href="#passions">Passions</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Get in touch</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="avatar">AM</div>
+  <p class="hero-tag">Designer &amp; Developer</p>
+  <h1>Alex Morgan</h1>
+  <p class="hero-sub">Crafting beautiful digital experiences at the intersection of design and technology.</p>
+  <div class="hero-actions">
+    <a href="#about" class="btn-primary">Explore my work</a>
+    <a href="#contact" class="btn-secondary">Say hello</a>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <p class="section-label">About me</p>
+        <h2 class="section-title">Building things that matter.</h2>
+        <p>Hi, I'm Alex — a <strong>product designer and full-stack developer</strong> based in San Francisco. I believe the best digital products feel inevitable: intuitive, fast, and beautiful.</p>
+        <p>With a background spanning <strong>UX research, frontend engineering, and brand identity</strong>, I bridge the gap between how things look and how they work. I've shipped products used by millions and collaborated with teams across four continents.</p>
+        <p>When I'm not staring at a screen, you'll find me hiking coastal trails, experimenting with film photography, or obsessing over a perfect cup of pour-over coffee.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <div class="stat-number">8+</div>
+          <div class="stat-label">Years of experience</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">40+</div>
+          <div class="stat-label">Projects shipped</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Design awards</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3M+</div>
+          <div class="stat-label">Users reached</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- RESUME / EXPERIENCE -->
+<section id="resume">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-label">Experience</p>
+      <h2 class="section-title">Where I've worked.</h2>
+    </div>
+    <div class="resume-cards reveal">
+      <div class="resume-card">
+        <div class="resume-card-icon">🏢</div>
+        <h3>Senior Product Designer</h3>
+        <div class="years">Figma · 2022 – Present</div>
+        <p>Led redesign of core collaboration features, increasing DAU by 34%. Managed a team of 3 designers across web and mobile.</p>
+      </div>
+      <div class="resume-card">
+        <div class="resume-card-icon">🚀</div>
+        <h3>Frontend Engineer</h3>
+        <div class="years">Vercel · 2020 – 2022</div>
+        <p>Built and maintained the dashboard UI using React and TypeScript. Implemented design tokens system used across all products.</p>
+      </div>
+      <div class="resume-card">
+        <div class="resume-card-icon">🎨</div>
+        <h3>UX Designer</h3>
+        <div class="years">Airbnb · 2018 – 2020</div>
+        <p>Owned end-to-end design for the Host onboarding flow, reducing drop-off by 22% through iterative usability testing.</p>
+      </div>
+      <div class="resume-card">
+        <div class="resume-card-icon">📐</div>
+        <h3>Design Intern</h3>
+        <div class="years">IDEO · Summer 2017</div>
+        <p>Contributed to human-centered design sprints for clients in healthcare and fintech, facilitating workshops and prototyping sessions.</p>
+      </div>
+    </div>
+    <a href="#" class="resume-download reveal" onclick="return false;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download full résumé (PDF)
+    </a>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- PASSIONS -->
+<section id="passions">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-label">Passions</p>
+      <h2 class="section-title">What drives me.</h2>
+    </div>
+    <div class="passions-grid">
+      <div class="passion-card reveal">
+        <span class="passion-icon">📸</span>
+        <h3>Film Photography</h3>
+        <p>Shooting 35mm and medium format. The deliberate slowness of analog pushes me to see light differently.</p>
+      </div>
+      <div class="passion-card reveal">
+        <span class="passion-icon">🏔️</span>
+        <h3>Trail Running</h3>
+        <p>From coastal bluffs to mountain ridges — nothing clears the mind like miles of singletrack before sunrise.</p>
+      </div>
+      <div class="passion-card reveal">
+        <span class="passion-icon">☕</span>
+        <h3>Specialty Coffee</h3>
+        <p>Obsessive about origin, process, and extraction. Currently fixated on Kenyan washed naturals.</p>
+      </div>
+      <div class="passion-card reveal">
+        <span class="passion-icon">📚</span>
+        <h3>Reading</h3>
+        <p>Mostly design theory, philosophy of mind, and the occasional sweeping novel. Currently: Zen and the Art of Motorcycle Maintenance.</p>
+      </div>
+      <div class="passion-card reveal">
+        <span class="passion-icon">🎵</span>
+        <h3>Music Production</h3>
+        <p>Ambient and electronic experiments in my spare time. There's a direct line between sound design and UX.</p>
+      </div>
+      <div class="passion-card reveal">
+        <span class="passion-icon">🌍</span>
+        <h3>Slow Travel</h3>
+        <p>48 countries and counting. I prefer staying long enough to find the local spots that never appear on a list.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-label">Contact</p>
+      <h2 class="section-title">Let's build something together.</h2>
+    </div>
+    <div class="contact-grid reveal">
+      <div class="contact-info">
+        <h3>Open to opportunities</h3>
+        <p>Whether you have a project in mind, want to collaborate, or just want to say hi — my inbox is always open.</p>
+        <div class="contact-links">
+          <a href="mailto:alex@example.com" class="contact-link">
+            <span class="contact-link-icon">✉️</span>
+            alex@example.com
+          </a>
+          <a href="#" class="contact-link" onclick="return false;">
+            <span class="contact-link-icon">💼</span>
+            linkedin.com/in/alexmorgan
+          </a>
+          <a href="#" class="contact-link" onclick="return false;">
+            <span class="contact-link-icon">🐙</span>
+            github.com/alexmorgan
+          </a>
+          <a href="#" class="contact-link" onclick="return false;">
+            <span class="contact-link-icon">🐦</span>
+            @alexmorgandesign
+          </a>
+        </div>
+      </div>
+      <form id="contactForm" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="fname">First name</label>
+            <input type="text" id="fname" placeholder="Jane" required />
+          </div>
+          <div class="field">
+            <label for="lname">Last name</label>
+            <input type="text" id="lname" placeholder="Smith" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" placeholder="jane@example.com" required />
+        </div>
+        <div class="field">
+          <label for="subject">Subject</label>
+          <input type="text" id="subject" placeholder="Project inquiry, Collaboration, Just saying hi…" />
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" placeholder="Tell me about your project or idea…" required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Send message →</button>
+        <div class="form-success" id="formSuccess">
+          ✓ Message sent! I'll get back to you within 24 hours.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Alex Morgan &nbsp;·&nbsp; Designed &amp; built with care &nbsp;·&nbsp; <a href="#">Back to top ↑</a></p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Stagger passion cards
+  document.querySelectorAll('.passion-card').forEach((card, i) => {
+    card.style.transitionDelay = `${i * 0.07}s`;
+  });
+
+  // Contact form
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('.submit-btn');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+    setTimeout(() => {
+      document.getElementById('formSuccess').classList.add('show');
+      this.reset();
+      btn.textContent = 'Send message →';
+      btn.disabled = false;
+    }, 900);
+  });
+
+  // Smooth nav highlight
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? '#f5f5f7' : '';
+    });
+  });
+</script>
+</body>
+</html>
