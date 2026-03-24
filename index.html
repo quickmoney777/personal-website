@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alex Morgan — Designer & Developer</title>
+  <title>Mehul Kudaisya — Designer & Developer</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -328,6 +328,12 @@
     }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
+    /* ─── STATIC ELECTRICITY CANVAS ──────────────── */
+    #static-canvas {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0; opacity: .45;
+    }
+
     /* ─── RESPONSIVE ──────────────────────────────── */
     @media (max-width: 768px) {
       nav { padding: 0 20px; }
@@ -340,9 +346,11 @@
 </head>
 <body>
 
+<canvas id="static-canvas"></canvas>
+
 <!-- NAV -->
 <nav>
-  <a href="#hero" class="nav-logo">Alex Morgan</a>
+  <a href="#hero" class="nav-logo">Mehul Kudaisya</a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#resume">Experience</a></li>
@@ -355,9 +363,9 @@
 <!-- HERO -->
 <section id="hero">
   <div class="hero-glow"></div>
-  <div class="avatar">AM</div>
+  <div class="avatar">MK</div>
   <p class="hero-tag">Designer &amp; Developer</p>
-  <h1>Alex Morgan</h1>
+  <h1>Mehul Kudaisya</h1>
   <p class="hero-sub">Crafting beautiful digital experiences at the intersection of design and technology.</p>
   <div class="hero-actions">
     <a href="#about" class="btn-primary">Explore my work</a>
@@ -556,10 +564,100 @@
 
 <!-- FOOTER -->
 <footer>
-  <p>© 2026 Alex Morgan &nbsp;·&nbsp; Designed &amp; built with care &nbsp;·&nbsp; <a href="#">Back to top ↑</a></p>
+  <p>© 2026 Mehul Kudaisya &nbsp;·&nbsp; Designed &amp; built with care &nbsp;·&nbsp; <a href="#">Back to top ↑</a></p>
 </footer>
 
 <script>
+  // Static electricity background
+  (function() {
+    const canvas = document.getElementById('static-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, bolts = [], particles = [];
+
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+
+    function randBetween(a, b) { return a + Math.random() * (b - a); }
+
+    // A single jagged arc segment
+    function makeBolt() {
+      const x = randBetween(0, W);
+      const y = randBetween(0, H);
+      const len = randBetween(40, 160);
+      const angle = randBetween(0, Math.PI * 2);
+      const segs = Math.floor(randBetween(3, 9));
+      const pts = [{ x, y }];
+      for (let i = 1; i <= segs; i++) {
+        const t = i / segs;
+        const jitter = randBetween(-18, 18);
+        pts.push({
+          x: x + Math.cos(angle) * len * t + Math.sin(angle) * jitter,
+          y: y + Math.sin(angle) * len * t - Math.cos(angle) * jitter
+        });
+      }
+      const brightness = randBetween(160, 255);
+      return {
+        pts,
+        life: 1,
+        decay: randBetween(0.06, 0.18),
+        color: `rgba(${brightness},${brightness + 20},255,`,
+        width: randBetween(0.3, 1.1)
+      };
+    }
+
+    function spawnParticle(x, y) {
+      return {
+        x, y,
+        vx: randBetween(-0.6, 0.6),
+        vy: randBetween(-0.6, 0.6),
+        life: 1,
+        decay: randBetween(0.04, 0.1),
+        r: randBetween(0.5, 1.5)
+      };
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, W, H);
+
+      // Randomly spawn new bolts
+      if (Math.random() < 0.18) {
+        const b = makeBolt();
+        bolts.push(b);
+        // Spawn a tiny particle at the bolt tip
+        const tip = b.pts[b.pts.length - 1];
+        if (Math.random() < 0.5) particles.push(spawnParticle(tip.x, tip.y));
+      }
+
+      // Draw & age bolts
+      bolts = bolts.filter(b => b.life > 0);
+      for (const b of bolts) {
+        ctx.beginPath();
+        ctx.moveTo(b.pts[0].x, b.pts[0].y);
+        for (let i = 1; i < b.pts.length; i++) ctx.lineTo(b.pts[i].x, b.pts[i].y);
+        ctx.strokeStyle = b.color + (b.life * 0.55) + ')';
+        ctx.lineWidth = b.width;
+        ctx.shadowColor = 'rgba(100,160,255,0.3)';
+        ctx.shadowBlur = 4;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        b.life -= b.decay;
+      }
+
+      // Draw & age particles
+      particles = particles.filter(p => p.life > 0);
+      for (const p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180,200,255,${p.life * 0.4})`;
+        ctx.fill();
+        p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+      }
+
+      requestAnimationFrame(tick);
+    }
+    tick();
+  })();
+
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
