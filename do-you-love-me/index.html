@@ -12,7 +12,9 @@
     overflow: hidden;
     font-family: "Trebuchet MS", "Comic Sans MS", sans-serif;
     touch-action: manipulation;
+    overscroll-behavior: none;
   }
+  body.playing { touch-action: none; }
 
   /* ---------- Iceland night sky ---------- */
   .sky {
@@ -215,13 +217,30 @@
     pointer-events: none;
     z-index: 4;
   }
-  .dog-1 { left: 4%; animation: bounce 2.4s ease-in-out infinite; }
-  .dog-2 { right: 4%; animation: bounce 2.4s ease-in-out 0.7s infinite; }
+  .dog-2 { right: 4%; animation: bounce 2.4s ease-in-out 0.7s infinite; --flip: scaleX(-1); transform: scaleX(-1); }
   @keyframes bounce {
     0%, 100% { transform: translateY(0) var(--flip, scaleX(1)); }
     50% { transform: translateY(-7px) var(--flip, scaleX(1)); }
   }
-  .dog-2 { --flip: scaleX(-1); transform: scaleX(-1); }
+
+  /* player puppy (controlled by the player, no idle bounce) */
+  .dog-player {
+    position: fixed;
+    bottom: 4vh;
+    left: calc(50% - 55px);
+    width: 110px;
+    pointer-events: none;
+    z-index: 4;
+  }
+  .dog-player.brr { filter: hue-rotate(160deg) saturate(1.6); }
+  .dog-player.shake { animation: shake 0.45s ease-in-out; }
+  @keyframes shake {
+    0%, 100% { margin-left: 0; }
+    20% { margin-left: -10px; }
+    40% { margin-left: 10px; }
+    60% { margin-left: -7px; }
+    80% { margin-left: 7px; }
+  }
 
   .tail {
     transform-origin: 8px 60px;
@@ -240,7 +259,7 @@
     94% { transform: rotate(5deg); }
   }
 
-  body.celebrating .dog { animation: partyJump 0.55s ease-in-out infinite; }
+  body.celebrating .dog, body.celebrating .dog-player { animation: partyJump 0.55s ease-in-out infinite; }
   @keyframes partyJump {
     0%, 100% { transform: translateY(0) var(--flip, scaleX(1)); }
     50% { transform: translateY(-26px) var(--flip, scaleX(1)) rotate(-4deg); }
@@ -262,7 +281,87 @@
     100% { opacity: 0; transform: translateY(-50px) scale(1.15); }
   }
 
-  /* ---------- Question card ---------- */
+  /* ---------- Game HUD & items ---------- */
+  .hud {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 7;
+    background: rgba(10, 18, 50, 0.65);
+    border: 1px solid rgba(140, 220, 255, 0.3);
+    color: #fff;
+    font-weight: bold;
+    font-size: 19px;
+    padding: 9px 22px;
+    border-radius: 30px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    white-space: nowrap;
+  }
+  body.playing .hud { display: block; }
+  .hud-tip {
+    display: none;
+    position: fixed;
+    top: 62px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 7;
+    color: #bcd9ff;
+    font-size: 14px;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+    white-space: nowrap;
+  }
+  body.playing .hud-tip { display: block; }
+
+  .item {
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-size: 30px;
+    pointer-events: none;
+    will-change: transform;
+    z-index: 4;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .pop-text {
+    position: fixed;
+    z-index: 7;
+    font-weight: bold;
+    font-size: 20px;
+    pointer-events: none;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+    animation: popText 0.8s ease-out forwards;
+  }
+  @keyframes popText {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(-46px) scale(1.35); }
+  }
+
+  .banner {
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 8;
+    text-align: center;
+    width: 94vw;
+  }
+  .banner h1 {
+    color: #fff;
+    font-size: clamp(30px, 8vw, 52px);
+    text-shadow: 0 0 24px rgba(61, 255, 160, 0.9);
+  }
+  .banner p {
+    color: #bcd9ff;
+    font-size: clamp(15px, 4vw, 20px);
+    margin-top: 8px;
+  }
+
+  /* ---------- Cards ---------- */
   .card {
     position: fixed;
     top: 40%;
@@ -281,7 +380,7 @@
   }
   .card h1 {
     color: #fff;
-    font-size: clamp(26px, 6vw, 40px);
+    font-size: clamp(24px, 5.6vw, 38px);
     margin-bottom: 8px;
     text-shadow: 0 2px 12px rgba(61, 255, 160, 0.35);
   }
@@ -290,6 +389,7 @@
     font-size: clamp(14px, 3.5vw, 18px);
     min-height: 2.8em;
     margin-bottom: 16px;
+    line-height: 1.45;
   }
   .heart-beat {
     display: inline-block;
@@ -356,7 +456,7 @@
     -webkit-backdrop-filter: blur(6px);
   }
   body.celebrating .celebration { display: block; animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-  body.celebrating .card { display: none; }
+  body.celebrating .card { display: none !important; }
   @keyframes popIn {
     from { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
     to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
@@ -406,19 +506,14 @@
 
 <!-- Mossy Icelandic cliffs framing the falls -->
 <svg class="cliffs" viewBox="0 0 1200 560" preserveAspectRatio="none">
-  <!-- distant ridge -->
   <path d="M0,560 L0,240 L130,150 L260,230 L380,120 L470,220 L470,560 Z" fill="#22354f" opacity="0.7"/>
   <path d="M730,560 L730,210 L840,110 L960,220 L1080,140 L1200,230 L1200,560 Z" fill="#22354f" opacity="0.7"/>
-  <!-- left cliff -->
   <path d="M0,560 L0,190 Q90,170 150,200 Q260,180 350,215 Q420,205 465,235 L470,560 Z" fill="#2f4a45"/>
   <path d="M0,205 Q90,180 160,208 Q270,190 355,222 Q425,212 465,238 L462,265 Q400,240 350,250 Q250,225 150,240 Q70,220 0,240 Z" fill="#4a7a5e"/>
-  <!-- right cliff -->
   <path d="M1200,560 L1200,190 Q1110,170 1050,200 Q940,180 850,215 Q780,205 735,235 L730,560 Z" fill="#2f4a45"/>
   <path d="M1200,205 Q1110,180 1040,208 Q930,190 845,222 Q775,212 735,238 L738,265 Q800,240 850,250 Q950,225 1050,240 Q1130,220 1200,240 Z" fill="#4a7a5e"/>
-  <!-- rock texture streaks -->
   <path d="M60,280 L80,420 M180,300 L200,460 M300,290 L320,440 M400,310 L415,470" stroke="#243b38" stroke-width="10" stroke-linecap="round" opacity="0.5"/>
   <path d="M1140,280 L1120,420 M1020,300 L1000,460 M900,290 L880,440 M800,310 L785,470" stroke="#243b38" stroke-width="10" stroke-linecap="round" opacity="0.5"/>
-  <!-- snow dustings on cliff tops -->
   <path d="M120,196 Q150,186 185,200 Q160,206 140,203 Z" fill="#e8f1fa" opacity="0.9"/>
   <path d="M1015,196 Q1050,186 1080,200 Q1055,206 1035,203 Z" fill="#e8f1fa" opacity="0.9"/>
 </svg>
@@ -429,8 +524,8 @@
 <div class="mist mist-2"></div>
 <div class="mist mist-3"></div>
 
-<!-- Dog 1: cream puppy with red scarf -->
-<svg class="dog dog-1" viewBox="0 0 120 100">
+<!-- Player: cream puppy with red scarf -->
+<svg class="dog-player" id="player" viewBox="0 0 120 100">
   <ellipse class="tail" cx="12" cy="58" rx="7" ry="16" fill="#f6e7d4" transform="rotate(-30 12 58)"/>
   <ellipse cx="52" cy="68" rx="34" ry="22" fill="#f6e7d4"/>
   <rect x="30" y="78" width="9" height="16" rx="4" fill="#f6e7d4"/>
@@ -451,7 +546,7 @@
   <rect x="96" y="60" width="8" height="18" rx="3" fill="#e63946" transform="rotate(-12 100 60)"/>
 </svg>
 
-<!-- Dog 2: brown puppy with teal scarf -->
+<!-- Cheerleader: brown puppy with teal scarf -->
 <svg class="dog dog-2" viewBox="0 0 120 100">
   <ellipse class="tail" cx="12" cy="58" rx="7" ry="16" fill="#c98d5f" transform="rotate(-30 12 58)"/>
   <ellipse cx="52" cy="68" rx="34" ry="22" fill="#c98d5f"/>
@@ -476,10 +571,29 @@
 <div class="dog-heart dog-heart-1">❤️</div>
 <div class="dog-heart dog-heart-2">💖</div>
 
-<!-- Question -->
-<div class="card" id="card">
-  <h1>Do you love me? <span class="heart-beat">💘</span></h1>
-  <p class="sub" id="subtitle">Answer carefully. Two puppies flew to Iceland for this. 🐶🐶🇮🇸</p>
+<!-- HUD -->
+<div class="hud" id="hud">❤️ 0/10</div>
+<div class="hud-tip">drag the puppy • catch hearts • dodge the ice 🧊</div>
+
+<!-- Level complete banner -->
+<div class="banner" id="banner">
+  <h1>LEVEL COMPLETE 🏆</h1>
+  <p>impressive… but that was the easy part 😈</p>
+</div>
+
+<!-- Intro card -->
+<div class="card" id="introCard">
+  <h1>🏆 The Love Trial 🇮🇸</h1>
+  <p class="sub">I have a VERY important question for you.<br>
+  But first you must prove yourself:<br>
+  <b>catch 10 hearts, dodge the ice.</b> The puppy believes in you 🐶</p>
+  <button class="btn btn-yes" id="startBtn">Start 🎮</button>
+</div>
+
+<!-- Question card (level 2) -->
+<div class="card" id="card" style="display:none">
+  <h1>FINAL LEVEL: Do you love me? <span class="heart-beat">💘</span></h1>
+  <p class="sub" id="subtitle">No mini-game this time. Just one question and two buttons. Easy… right? 🐶</p>
   <button class="btn btn-yes" id="yesBtn">Yes 💕</button>
   <button class="btn btn-no" id="noBtn">No</button>
 </div>
@@ -520,7 +634,131 @@
     document.body.appendChild(f);
   }
 
-  // ---------- Runaway No button ----------
+  // ---------- Level 1: catch the hearts ----------
+  const GOAL = 10;
+  const player = document.getElementById('player');
+  const hud = document.getElementById('hud');
+  const banner = document.getElementById('banner');
+  const introCard = document.getElementById('introCard');
+  const card = document.getElementById('card');
+
+  let state = 'intro';           // intro -> play -> question -> done
+  let score = 0;
+  let playerX = window.innerWidth / 2 - 55;
+  let targetX = window.innerWidth / 2;
+  let lastTime = 0;
+  let spawnTimer = null;
+  const items = [];
+
+  const catchLines = ['+1 💕', 'yes!! 💖', 'love secured 💘', '+1 (obviously)', 'cardio AND romance??'];
+  const iceLines = ['-1 🥶', 'BRRR 🧊', 'ice cold 😤', 'ouch -1'];
+
+  document.getElementById('startBtn').addEventListener('click', function () {
+    state = 'play';
+    document.body.classList.add('playing');
+    introCard.style.display = 'none';
+    lastTime = performance.now();
+    requestAnimationFrame(tick);
+    spawnTimer = setInterval(spawnItem, 620);
+  });
+
+  function onMove(x) { targetX = x; }
+  window.addEventListener('pointermove', function (e) { onMove(e.clientX); });
+  window.addEventListener('touchmove', function (e) {
+    if (state === 'play') { e.preventDefault(); onMove(e.touches[0].clientX); }
+  }, { passive: false });
+  window.addEventListener('touchstart', function (e) {
+    if (state === 'play') onMove(e.touches[0].clientX);
+  });
+  window.addEventListener('keydown', function (e) {
+    if (state !== 'play') return;
+    if (e.key === 'ArrowLeft') targetX = Math.max(0, targetX - 70);
+    if (e.key === 'ArrowRight') targetX = Math.min(window.innerWidth, targetX + 70);
+  });
+
+  function spawnItem() {
+    const ice = Math.random() < 0.25;
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.textContent = ice ? '🧊' : ['❤️', '💖', '💗', '💘'][Math.floor(Math.random() * 4)];
+    const x = 15 + Math.random() * (window.innerWidth - 60);
+    const obj = { el: el, x: x, y: -40, speed: 2.2 + Math.random() * 1.8 + score * 0.15, ice: ice };
+    el.style.transform = 'translate(' + x + 'px,-40px)';
+    document.body.appendChild(el);
+    items.push(obj);
+  }
+
+  function tick(now) {
+    if (state !== 'play') return;
+    const dt = Math.min((now - lastTime) / 16.7, 3);
+    lastTime = now;
+
+    // move puppy toward finger/cursor
+    const dest = Math.max(0, Math.min(window.innerWidth - 110, targetX - 55));
+    playerX += (dest - playerX) * 0.18 * dt;
+    player.style.left = playerX + 'px';
+    player.style.transform = dest < playerX - 1 ? 'scaleX(-1)' : 'scaleX(1)';
+
+    const pr = player.getBoundingClientRect();
+    for (let i = items.length - 1; i >= 0; i--) {
+      const it = items[i];
+      it.y += it.speed * dt;
+      it.el.style.transform = 'translate(' + it.x + 'px,' + it.y + 'px)';
+
+      if (it.y > window.innerHeight + 40) {
+        it.el.remove();
+        items.splice(i, 1);
+        continue;
+      }
+
+      // collision with the puppy
+      const cx = it.x + 15, cy = it.y + 18;
+      if (cx > pr.left + 6 && cx < pr.right - 6 && cy > pr.top + 14 && cy < pr.bottom - 4) {
+        if (it.ice) {
+          score = Math.max(0, score - 1);
+          popText(cx, cy, iceLines[Math.floor(Math.random() * iceLines.length)], '#9fd4ff');
+          player.classList.add('shake', 'brr');
+          setTimeout(function () { player.classList.remove('shake', 'brr'); }, 500);
+        } else {
+          score++;
+          popText(cx, cy, catchLines[Math.floor(Math.random() * catchLines.length)], '#ff8fb7');
+        }
+        hud.textContent = '❤️ ' + score + '/' + GOAL;
+        it.el.remove();
+        items.splice(i, 1);
+        if (score >= GOAL) { winLevel(); return; }
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function popText(x, y, text, color) {
+    const p = document.createElement('div');
+    p.className = 'pop-text';
+    p.textContent = text;
+    p.style.left = Math.min(x, window.innerWidth - 150) + 'px';
+    p.style.top = y + 'px';
+    p.style.color = color;
+    document.body.appendChild(p);
+    setTimeout(function () { p.remove(); }, 850);
+  }
+
+  function winLevel() {
+    state = 'question';
+    clearInterval(spawnTimer);
+    items.forEach(function (o) { o.el.remove(); });
+    items.length = 0;
+    document.body.classList.remove('playing');
+    player.style.transform = 'scaleX(1)';
+    banner.style.display = 'block';
+    burstHearts(10);
+    setTimeout(function () {
+      banner.style.display = 'none';
+      card.style.display = 'block';
+    }, 1800);
+  }
+
+  // ---------- Level 2: the runaway No button ----------
   const noBtn = document.getElementById('noBtn');
   const yesBtn = document.getElementById('yesBtn');
   const subtitle = document.getElementById('subtitle');
@@ -536,9 +774,9 @@
     "FINE. I surrender. I'm basically a Yes now 🏳️"
   ];
   const subTexts = [
-    'Answer carefully. Two puppies flew to Iceland for this. 🐶🐶🇮🇸',
+    'No mini-game this time. Just one question and two buttons. Easy… right? 🐶',
     'Interesting choice for someone so cute 🤨',
-    'The puppies just gasped. Audibly. 🐶😱',
+    "You caught 10 hearts but you can't catch ONE button? 😹",
     'Even the waterfall paused to watch this disaster 😳',
     'That button does cardio. You do not. Give up. 🏃‍♀️',
     '10,000 couples have played this. Number of successful No clicks: 0',
@@ -555,7 +793,6 @@
     escapes++;
 
     if (escapes >= noTexts.length - 1) {
-      // The No button gives up and defects
       surrendered = true;
       noBtn.textContent = noTexts[noTexts.length - 1];
       subtitle.textContent = subTexts[subTexts.length - 1];
@@ -576,7 +813,6 @@
     noBtn.textContent = noTexts[escapes];
     subtitle.textContent = subTexts[escapes];
 
-    // Yes gets bigger and more tempting each time
     const scale = Math.min(1 + escapes * 0.08, 1.9);
     yesBtn.style.transform = 'scale(' + scale + ')';
   }
@@ -596,7 +832,7 @@
     }
   });
 
-  // ---------- Yes! ----------
+  // ---------- Celebration ----------
   const heartEmoji = ['❤️', '💖', '💕', '💘', '💗', '🩷', '🐶'];
 
   yesBtn.addEventListener('click', function () { celebrate(false); });
@@ -610,6 +846,7 @@
       document.getElementById('celebrateSub').innerHTML =
         'And it only took ' + escapes + ' attempt' + (escapes === 1 ? '' : 's') + ' at the No button 😌<br>Now come collect your hug 🫂';
     }
+    state = 'done';
     document.body.classList.add('celebrating');
     noBtn.remove();
     burstHearts(24);
